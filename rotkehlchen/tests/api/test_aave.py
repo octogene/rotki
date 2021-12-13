@@ -2,10 +2,11 @@ import random
 import warnings as test_warnings
 from contextlib import ExitStack
 from http import HTTPStatus
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pytest
 import requests
+from eth_typing import ChecksumAddress
 
 from rotkehlchen.api.server import APIServer
 from rotkehlchen.constants.assets import A_BUSD, A_WBTC
@@ -42,7 +43,10 @@ AAVE_V2_TEST_ACC = '0x008C00c45D461d7E08acBC4755a4A0a3a94115ee'
 
 @pytest.mark.parametrize('ethereum_accounts', [[AAVE_BALANCESV1_TEST_ACC, AAVE_BALANCESV2_TEST_ACC]])  # noqa: E501
 @pytest.mark.parametrize('ethereum_modules', [['aave']])
-def test_query_aave_balances(rotkehlchen_api_server, ethereum_accounts):
+def test_query_aave_balances(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+) -> None:
     """Check querying the aave balances endpoint works. Uses real data.
 
     TODO: Here we should use a test account for which we will know what balances
@@ -112,7 +116,11 @@ def test_query_aave_balances(rotkehlchen_api_server, ethereum_accounts):
 @pytest.mark.parametrize('mocked_current_prices', [aave_mocked_current_prices])
 @pytest.mark.parametrize('default_mock_price_value', [FVal(1)])
 @pytest.mark.parametrize('aave_use_graph', [True])
-def test_query_aave_history_with_borrowing_v2(rotkehlchen_api_server, ethereum_accounts, aave_use_graph):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history_with_borrowing_v2(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+        aave_use_graph: bool,
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     """Check querying the aave histoy endpoint works. Uses real data."""
     rotki = rotkehlchen_api_server.rest_api.rotkehlchen
     setup = setup_balances(
@@ -127,9 +135,9 @@ def test_query_aave_history_with_borrowing_v2(rotkehlchen_api_server, ethereum_a
 @pytest.mark.parametrize('ethereum_accounts', [[AAVE_BALANCESV1_TEST_ACC]])
 @pytest.mark.parametrize('ethereum_modules', [['makerdao_dsr']])
 def test_query_aave_balances_module_not_activated(
-        rotkehlchen_api_server,
-        ethereum_accounts,
-):
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+) -> None:
     async_query = random.choice([False, True])
     rotki = rotkehlchen_api_server.rest_api.rotkehlchen
     setup = setup_balances(rotki, ethereum_accounts=ethereum_accounts, btc_accounts=None)
@@ -249,7 +257,11 @@ def _query_simple_aave_history_test_v2(
 @pytest.mark.parametrize('mocked_current_prices', [aave_mocked_current_prices])
 @pytest.mark.parametrize('default_mock_price_value', [FVal(1)])
 @pytest.mark.parametrize('aave_use_graph', [True, False])  # Try both with blockchain and graph
-def test_query_aave_history(rotkehlchen_api_server, ethereum_accounts, aave_use_graph):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+        aave_use_graph: bool,
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     """Check querying the aave histoy endpoint works. Uses real data.
 
     Since this actually queries real blockchain data for aave it is a very slow test
@@ -279,7 +291,11 @@ def test_query_aave_history(rotkehlchen_api_server, ethereum_accounts, aave_use_
 @pytest.mark.parametrize('mocked_current_prices', [aave_mocked_current_prices])
 @pytest.mark.parametrize('default_mock_price_value', [FVal(1)])
 @pytest.mark.parametrize('aave_use_graph', [True])  # Try both with blockchain and graph
-def test_query_aave_history2(rotkehlchen_api_server, ethereum_accounts, aave_use_graph):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history2(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+        aave_use_graph: bool,
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     """Check querying the aave histoy endpoint works. Uses real data.
 
     Since this actually queries real blockchain data for aave it is a very slow test
@@ -359,7 +375,11 @@ def _query_borrowing_aave_history_test(setup: BalancesTestSetup, server: APIServ
 @pytest.mark.parametrize('mocked_current_prices', [aave_mocked_current_prices])
 @pytest.mark.parametrize('default_mock_price_value', [FVal(1)])
 @pytest.mark.parametrize('aave_use_graph', [True])
-def test_query_aave_history_with_borrowing(rotkehlchen_api_server, ethereum_accounts, aave_use_graph):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history_with_borrowing(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+        aave_use_graph: bool,
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     """Check querying the aave histoy endpoint works. Uses real data."""
     rotki = rotkehlchen_api_server.rest_api.rotkehlchen
     setup = setup_balances(
@@ -421,7 +441,11 @@ def _test_for_duplicates_and_negatives(setup: BalancesTestSetup, server: APIServ
 @pytest.mark.parametrize('mocked_current_prices', [aave_mocked_current_prices])
 @pytest.mark.parametrize('default_mock_price_value', [FVal(1)])
 @pytest.mark.parametrize('aave_use_graph', [True])
-def test_query_aave_history_no_duplicates(rotkehlchen_api_server, ethereum_accounts, aave_use_graph):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history_no_duplicates(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+        aave_use_graph: bool,
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     """Check querying the aave histoy avoids duplicate event data and keeps totals positive"""
     rotki = rotkehlchen_api_server.rest_api.rotkehlchen
     setup = setup_balances(
@@ -438,7 +462,10 @@ def test_query_aave_history_no_duplicates(rotkehlchen_api_server, ethereum_accou
 
 @pytest.mark.parametrize('ethereum_modules', [['aave']])
 @pytest.mark.parametrize('start_with_valid_premium', [False])
-def test_query_aave_history_non_premium(rotkehlchen_api_server, ethereum_accounts):  # pylint: disable=unused-argument  # noqa: E501
+def test_query_aave_history_non_premium(
+        rotkehlchen_api_server: APIServer,
+        ethereum_accounts: List[ChecksumAddress],
+) -> None:  # pylint: disable=unused-argument  # noqa: E501
     response = requests.get(api_url_for(
         rotkehlchen_api_server,
         "aavehistoryresource",
